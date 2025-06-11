@@ -22,7 +22,7 @@ class HomePage extends StatelessWidget {
           IconButton(
             icon: Icon(Icons.account_circle, color: Colors.grey[700], size: 44), // larger icon
             onPressed: () {
-              // Profile action
+             
             },
           ),
         ],
@@ -36,7 +36,7 @@ class HomePage extends StatelessWidget {
               child: CircularPercentIndicator(
                 radius: 140.0, // reduce slightly to fit well
                 lineWidth: 25.0,
-                percent: 0.40,
+                percent: 0.43,
                 center: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   mainAxisSize: MainAxisSize.min, // <== important, prevents overflow
@@ -46,7 +46,7 @@ class HomePage extends StatelessWidget {
                       style: TextStyle(color: Colors.grey[700], fontSize: 20),
                     ),
                     Text(
-                      '12%',
+                      '43%',
                       style: TextStyle(fontSize: 56, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                     Text(
@@ -66,14 +66,12 @@ class HomePage extends StatelessWidget {
                 backgroundColor: Colors.grey[300]!,
               ),
             ),
-                        SizedBox(height: 12),
+            SizedBox(height: 12),
             Text(
               'January 23, 2020 - April 22, 2025',
               style: TextStyle(color: Colors.grey[600], fontSize: 16),
             ),
             SizedBox(height: 20),
-
-            // Metric Cards
             _buildMetricCard(
               title: 'Vessel Tortuosity',
               icon: Icons.show_chart,
@@ -86,8 +84,6 @@ class HomePage extends StatelessWidget {
               value: '2.1',
             ),
             SizedBox(height: 20),
-
-            // Average Eye Health Chart
             Container(
               width: double.infinity,
               decoration: BoxDecoration(
@@ -158,8 +154,6 @@ class HomePage extends StatelessWidget {
               ),
             ),
             SizedBox(height: 28),
-
-            // Upload Photo Section
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -189,8 +183,6 @@ class HomePage extends StatelessWidget {
               ],
             ),
             SizedBox(height: 20),
-
-            // Bottom Link
             GestureDetector(
               onTap: () {
                 // Learn more action
@@ -266,8 +258,8 @@ class HomePage extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 100, // larger
-        height: 100, // larger
+        width: 100,
+        height: 100,
         decoration: BoxDecoration(
           color: Colors.white,
           shape: BoxShape.circle,
@@ -279,7 +271,7 @@ class HomePage extends StatelessWidget {
             ),
           ],
         ),
-        child: Icon(icon, size: 40, color: Colors.black), // larger icon
+        child: Icon(icon, size: 40, color: Colors.black),
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:retinalapp/register.dart';
+import 'package:retinalapp/login.dart';
 
 class LandingScreen extends StatelessWidget {
   @override
@@ -16,7 +17,7 @@ class LandingScreen extends StatelessWidget {
               Text(
                 'retina',
                 style: TextStyle(
-                  fontSize: 48,
+                  fontSize: 60,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue[700],
                 ),
@@ -24,28 +25,30 @@ class LandingScreen extends StatelessWidget {
               Text(
                 'tracker',
                 style: TextStyle(
-                  fontSize: 48,
+                  fontSize: 60,
                   fontWeight: FontWeight.bold,
                   color: Colors.blue[700],
                 ),
               ),
-              SizedBox(height: 8),
+              SizedBox(height: 12),
               Text(
                 'monitor your eye health',
                 style: TextStyle(
-                  fontSize: 16,
+                  fontSize: 20,
                   color: Colors.grey[600],
                 ),
               ),
               Spacer(),
+
+              // Main button → Login
               SizedBox(
-                width: 180,
-                height: 50,
+                width: 220,
+                height: 60,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => RegisterPage()),
+                      MaterialPageRoute(builder: (context) => LoginPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
@@ -56,12 +59,31 @@ class LandingScreen extends StatelessWidget {
                     elevation: 4,
                   ),
                   child: Text(
-                    'Begin',
+                    'Login',
                     style: TextStyle(
-                      fontSize: 18,
+                      fontSize: 22,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
+                  ),
+                ),
+              ),
+              SizedBox(height: 24),
+
+              // Register link only
+              TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => RegisterPage()),
+                  );
+                },
+                child: Text(
+                  'Don\'t have an account? Register',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Colors.blue[700],
+                    decoration: TextDecoration.underline,
                   ),
                 ),
               ),
