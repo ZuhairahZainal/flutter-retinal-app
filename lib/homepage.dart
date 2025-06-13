@@ -15,12 +15,12 @@ class HomePage extends StatelessWidget {
           style: TextStyle(
             color: Colors.blue[700],
             fontWeight: FontWeight.bold,
-            fontSize: 24, // larger
+            fontSize: 24,
           ),
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.grey[700], size: 44), // larger icon
+            icon: Icon(Icons.account_circle, color: Colors.grey[700], size: 44),
             onPressed: () {
              
             },
@@ -28,18 +28,18 @@ class HomePage extends StatelessWidget {
         ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20), // more padding
+        padding: EdgeInsets.all(20), 
         child: Column(
           children: [
             // Circular Progress
             Center(
               child: CircularPercentIndicator(
-                radius: 140.0, // reduce slightly to fit well
+                radius: 140.0,
                 lineWidth: 25.0,
                 percent: 0.43,
                 center: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  mainAxisSize: MainAxisSize.min, // <== important, prevents overflow
+                  mainAxisSize: MainAxisSize.min,
                   children: [
                     Text(
                       'Percent decline',
