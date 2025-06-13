@@ -1,13 +1,8 @@
-# 📱 Retinal Tracker — Work in Progress 🚧
+# 📱 Retinal Tracker App — SIT AI Hackathon 🚧
 
-**Retinal Tracker** is a personal mobile app designed to help users monitor their eye health by tracking retinal scan data over time.
+**Retinal Tracker** is a personal mobile app designed to help users monitor their eye health by tracking retinal scan data over time. This project is **currently under development** — features are not complete yet for the AI Hackathon.
 
-⚠️ This project is **currently under active development** — features are not complete yet.  
-We are building this as a collaborative project.
-
----
-
-## ✨ Project Goals
+## Project Goals
 
 - Provide older-friendly UI for tracking retinal health
 - Upload and analyze retinal scans
@@ -32,7 +27,7 @@ We are building this as a collaborative project.
 
 - Flutter SDK installed (3.x recommended)
 - Git installed
-- Android emulator / iOS simulator or real device
+- Android emulator or real device
 
 ### Running the project
 
