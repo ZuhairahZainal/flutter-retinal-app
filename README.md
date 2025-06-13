@@ -21,7 +21,7 @@
 
 ---
 
-## 🚀 Getting Started (Local Development)
+## 🚀 Getting Started (Local Development & Branching Workflow)
 
 ### Prerequisites
 
@@ -39,5 +39,51 @@ cd retinalapp
 # Install dependencies
 flutter pub get
 
-# Run the app
+# Run the app (on current branch)
 flutter run
+```
+
+### Working with branches (IMPORTANT)
+
+To keep our `main` branch stable, please **always work on your own branch**:
+
+```bash
+# Checkout main branch first and pull latest changes
+git checkout main
+git pull origin main
+
+# Create your feature branch
+git checkout -b your-branch-name
+
+# Do your work...
+
+# Add and commit your changes
+git add .
+git commit -m "Your commit message"
+
+# Push your branch to GitHub
+git push origin your-branch-name
+
+# Then open a Pull Request (PR) to merge into main branch
+```
+
+👉 **Do not commit directly to main branch.**  
+
+---
+
+## 🗂 Project Structure
+
+```plaintext
+/lib
+  graph.dart                 # Page for detail graph display
+  homepage.dart              # HomePage with charts and progress
+  landing.dart               # Landing screen with Login/Register
+  login.dart                 # LoginPage
+  main.dart                  # App entry point
+  profile.dart               # User profile + settings (if needed)
+  register.dart              # RegisterPage
+  
+/assets
+  (app images)
+/README.md                   # This file 
+```
