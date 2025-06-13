@@ -1,16 +1,48 @@
-# retinalapp
+# 📱 Retinal Tracker — Work in Progress 🚧
 
-A new Flutter project.
+**Retinal Tracker** is a personal mobile app designed to help users monitor their eye health by tracking retinal scan data over time.
 
-## Getting Started
+⚠️ This project is **currently under active development** — features are not complete yet.  
+We are building this as a collaborative project.
 
-This project is a starting point for a Flutter application.
+---
 
-A few resources to get you started if this is your first Flutter project:
+## ✨ Project Goals
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+- Provide older-friendly UI for tracking retinal health
+- Upload and analyze retinal scans
+- Show percent decline and average eye health trends
+- Allow users to monitor their eye health progress over time
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+---
+
+## 🏗 Current Status
+
+✅ Basic UI screens implemented: Landing, Register, Login, Home  
+✅ Percent circular indicator and line chart integrated  
+⚠️ Upload / camera feature in progress  
+⚠️ Data storage, backend, authentication not complete yet  
+⚠️ No cloud sync yet  
+
+---
+
+## 🚀 Getting Started (Local Development)
+
+### Prerequisites
+
+- Flutter SDK installed (3.x recommended)
+- Git installed
+- Android emulator / iOS simulator or real device
+
+### Running the project
+
+```bash
+# Clone the repo
+git clone https://github.com/ZuhairahZainal/flutter-retinal-app.git
+cd retinalapp
+
+# Install dependencies
+flutter pub get
+
+# Run the app
+flutter run
