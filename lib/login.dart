@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:retinalapp/homepage.dart';
-import 'package:retinalapp/register.dart'; // for navigation to RegisterPage
+import 'package:retinalapp/register.dart';
 
 class LoginPage extends StatefulWidget {
   @override
