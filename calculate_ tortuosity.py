@@ -1,3 +1,8 @@
+#This code displays vessels reduced to 1 pixel lines and calculates tortuosity 
+#first run the following program to extract vessels from a retinal image:
+
+#https://github.com/orobix/retina-unet/blob/master/Readme.md
+
 import cv2
 import numpy as np
 from skimage.morphology import skeletonize
