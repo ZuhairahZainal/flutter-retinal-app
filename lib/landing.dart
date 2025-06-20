@@ -1,95 +1,73 @@
 import 'package:flutter/material.dart';
 import 'package:retinalapp/register.dart';
-import 'package:retinalapp/login.dart';
 
 class LandingScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[100],
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Spacer(),
-              Text(
-                'retina',
-                style: TextStyle(
-                  fontSize: 60,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue[700],
-                ),
+      backgroundColor: const Color(0xFFFFFDF5),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 36.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Spacer(flex: 2),
+            Text(
+              'retina',
+              style: TextStyle(
+                fontSize: 72,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[700],
               ),
-              Text(
-                'tracker',
-                style: TextStyle(
-                  fontSize: 60,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue[700],
-                ),
+            ),
+            Text(
+              'tracker',
+              style: TextStyle(
+                fontSize: 72,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue[700],
               ),
-              SizedBox(height: 12),
-              Text(
-                'monitor your eye health',
-                style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.grey[600],
-                ),
+            ),
+            const SizedBox(height: 12),
+            Text(
+              'monitor your eye health',
+              style: TextStyle(
+                fontSize: 30,
+                color: Colors.grey[700],
               ),
-              Spacer(),
-
-              // Main button → Login
-              SizedBox(
-                width: 220,
-                height: 60,
+            ),
+            const Spacer(flex: 3),
+            Center(
+              child: SizedBox(
+                width: 200,
+                height: 68,
                 child: ElevatedButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
+                      MaterialPageRoute(builder: (context) => RegisterPage()),
                     );
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue[600],
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(30),
+                      borderRadius: BorderRadius.circular(50),
                     ),
-                    elevation: 4,
+                    elevation: 2,
                   ),
-                  child: Text(
-                    'Login',
+                  child: const Text(
+                    'Begin',
                     style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
                       color: Colors.white,
                     ),
                   ),
                 ),
               ),
-              SizedBox(height: 24),
-
-              // Register link only
-              TextButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => RegisterPage()),
-                  );
-                },
-                child: Text(
-                  'Don\'t have an account? Register',
-                  style: TextStyle(
-                    fontSize: 18,
-                    color: Colors.blue[700],
-                    decoration: TextDecoration.underline,
-                  ),
-                ),
-              ),
-              SizedBox(height: 40),
-            ],
-          ),
+            ),
+            const SizedBox(height: 50),
+          ],
         ),
       ),
     );

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "258523422526",
+    "project_id": "retinal-app-d24bf",
+    "storage_bucket": "retinal-app-d24bf.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:258523422526:android:509aa7214d88f1ae5cd66f",
+        "android_client_info": {
+          "package_name": "com.example.retinalapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB6Ey8qPomI3p6uerbFfDZ77PulFf_P4TY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

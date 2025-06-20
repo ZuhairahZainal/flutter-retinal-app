@@ -2,9 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:retinalapp/img_list.dart'; // Your UploadedScansPage
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:retinalapp/img_list.dart';
 
 class UploadRetinalScanPage extends StatefulWidget {
   @override
@@ -29,13 +31,13 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
   }
 
   Future<void> _selectDate() async {
-    final DateTime? picked = await showDatePicker(
+    final picked = await showDatePicker(
       context: context,
       initialDate: _selectedDate,
       firstDate: DateTime(2020),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != _selectedDate) {
+    if (picked != null) {
       setState(() {
         _selectedDate = picked;
       });
@@ -43,6 +45,9 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
   }
 
   Future<void> _uploadScan() async {
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user?.uid;
+
     if (_selectedImage == null || _eyeSide == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Please select image and eye side')),
@@ -53,24 +58,26 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
     setState(() => _isUploading = true);
 
     try {
-      final fileName = '${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final storageRef = FirebaseStorage.instance.ref().child('retina_scans/$fileName');
-      final uploadTask = await storageRef.putFile(_selectedImage!);
-      final imageUrl = await uploadTask.ref.getDownloadURL();
+      final analysis = await _callBackendAnalysis(_selectedImage!);
 
       await FirebaseFirestore.instance.collection('retinal_scans').add({
-        'url': imageUrl,
+        'userId': userId,
         'eyeSide': _eyeSide,
         'notes': _notesController.text,
         'date': _selectedDate.toIso8601String(),
         'timestamp': FieldValue.serverTimestamp(),
+        'average_tortuosity': analysis['average_tortuosity'],
+        'max_tortuosity': analysis['max_tortuosity'],
+        'num_vessels': analysis['num_vessels'],
+        'retinopathy_grade': analysis['retinopathy_grade'],
+        'edema_risk': analysis['edema_risk'],
       });
 
       showDialog(
         context: context,
         builder: (_) => AlertDialog(
           title: Text('Upload Successful'),
-          content: Text('Your scan has been uploaded.'),
+          content: Text('Your scan has been uploaded and analyzed.'),
           actions: [
             TextButton(
               onPressed: () {
@@ -94,30 +101,48 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
     setState(() => _isUploading = false);
   }
 
+  Future<Map<String, dynamic>> _callBackendAnalysis(File imageFile) async {
+    final uri = Uri.parse('http://10.0.2.2:8000/analyze-file');
+    final request = http.MultipartRequest('POST', uri)
+      ..files.add(await http.MultipartFile.fromPath('file', imageFile.path));
+    final response = await request.send();
+
+    if (response.statusCode == 200) {
+      final resBody = await response.stream.bytesToString();
+      return jsonDecode(resBody);
+    } else {
+      throw Exception('Backend error: ${response.statusCode}');
+    }
+  }
+
+  Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
+    return GestureDetector(
+      onTap: onTap,
+      child: CircleAvatar(
+        backgroundColor: Colors.blue[700],
+        radius: 32,
+        child: Icon(icon, size: 28, color: Colors.white),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Upload Retinal Scan', style: TextStyle(color: Colors.white),),
+        title: Text('Upload Retinal Scan', style: TextStyle(color: Colors.white)),
         backgroundColor: Colors.blue[700],
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildCircleButton(
-                  icon: Icons.camera_alt,
-                  onTap: () => _pickImage(ImageSource.camera),
-                ),
-                _buildCircleButton(
-                  icon: Icons.upload,
-                  onTap: () => _pickImage(ImageSource.gallery),
-                ),
+                _buildCircleButton(icon: Icons.camera_alt, onTap: () => _pickImage(ImageSource.camera)),
+                _buildCircleButton(icon: Icons.upload, onTap: () => _pickImage(ImageSource.gallery)),
               ],
             ),
             SizedBox(height: 16),
@@ -128,10 +153,7 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
               ),
             SizedBox(height: 20),
             DropdownButtonFormField<String>(
-              decoration: InputDecoration(
-                labelText: 'Eye Side',
-                border: OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: 'Eye Side', border: OutlineInputBorder()),
               value: _eyeSide,
               items: ['Left', 'Right']
                   .map((side) => DropdownMenuItem(value: side, child: Text(side)))
@@ -141,10 +163,7 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
             SizedBox(height: 20),
             Row(
               children: [
-                Text(
-                  'Scan Date: ${DateFormat.yMMMd().format(_selectedDate)}',
-                  style: TextStyle(fontSize: 16),
-                ),
+                Text('Scan Date: ${DateFormat.yMMMd().format(_selectedDate)}', style: TextStyle(fontSize: 16)),
                 Spacer(),
                 ElevatedButton(
                   onPressed: _selectDate,
@@ -159,10 +178,7 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
             SizedBox(height: 20),
             TextField(
               controller: _notesController,
-              decoration: InputDecoration(
-                labelText: 'Notes (optional)',
-                border: OutlineInputBorder(),
-              ),
+              decoration: InputDecoration(labelText: 'Notes (optional)', border: OutlineInputBorder()),
               maxLines: 2,
             ),
             SizedBox(height: 30),
@@ -172,11 +188,7 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
               child: ElevatedButton.icon(
                 onPressed: _isUploading ? null : _uploadScan,
                 icon: _isUploading
-                    ? SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                      )
+                    ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
                     : Icon(Icons.cloud_upload, color: Colors.white),
                 label: Text(
                   _isUploading ? 'Uploading...' : 'Upload Scan',
@@ -191,17 +203,6 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: CircleAvatar(
-        backgroundColor: Colors.blue[700],
-        radius: 32,
-        child: Icon(icon, size: 28, color: Colors.white),
       ),
     );
   }
