@@ -141,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   Center(
                     child: Text(
                       name ?? 'No name',
-                      style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                     ),
                   ),
                   SizedBox(height: 30),
@@ -149,7 +149,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   SizedBox(height: 16),
                   _buildProfileItem(Icons.cake, 'Age', age ?? ''),
                   SizedBox(height: 24),
-                  Text('Medical Conditions:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                  Text('Medical Conditions:', style: TextStyle(fontSize: 22, fontWeight: FontWeight.w600)),
                   SizedBox(height: 8),
                   Column(
                     children: allConditions.map((condition) {
@@ -174,7 +174,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   if (customConditions.isNotEmpty) ...[
                     SizedBox(height: 16),
-                    Text('Other Conditions:', style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                    Text('Other Conditions:', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                     SizedBox(height: 8),
                     Column(
                       children: customConditions.map((cond) {

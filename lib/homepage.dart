@@ -24,11 +24,13 @@ class _HomePageState extends State<HomePage> {
   double avgEdemaRisk = 0.0;
   bool hasGlaucoma = false;
   List<String> glaucomaCharacteristics = [];
+  List<FlSpot> _tortuositySpots = [];
 
   @override
   void initState() {
     super.initState();
     _calculateAverages();
+    _loadTortuosityGraphData();
   }
 
   Future<void> _calculateAverages() async {
@@ -71,6 +73,33 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  Future<void> _loadTortuosityGraphData() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) return;
+
+    final snapshot = await FirebaseFirestore.instance
+        .collection('retinal_scans')
+        .where('userId', isEqualTo: userId)
+        .orderBy('timestamp')
+        .get();
+
+    final List<FlSpot> spots = [];
+    int index = 0;
+
+    for (final doc in snapshot.docs) {
+      final data = doc.data();
+      final tort = data['average_tortuosity'];
+      if (tort != null) {
+        spots.add(FlSpot(index.toDouble(), (tort as num).toDouble()));
+        index++;
+      }
+    }
+
+    setState(() {
+      _tortuositySpots = spots;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -89,7 +118,7 @@ class _HomePageState extends State<HomePage> {
         ),
         actions: [
           IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.grey[700], size: 44),
+            icon: Icon(Icons.account_circle, color: Colors.grey[700], size: 45),
             onPressed: () {
               final user = FirebaseAuth.instance.currentUser;
               if (user != null) {
@@ -193,15 +222,15 @@ class _HomePageState extends State<HomePage> {
             children: [
               Icon(Icons.remove_red_eye, color: Colors.blue[700]),
               SizedBox(width: 12),
-              Text('Glaucoma', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey[800])),
+              Text('Glaucoma', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey[800])),
               Spacer(),
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                padding: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
                 decoration: BoxDecoration(
                   color: hasGlaucoma ? Colors.red[100] : Colors.green[100],
-                  borderRadius: BorderRadius.circular(20),
+                  borderRadius: BorderRadius.circular(10),
                 ),
-                child: Text(hasGlaucoma ? 'Yes' : 'No', style: TextStyle(color: hasGlaucoma ? Colors.red[800] : Colors.green[800], fontWeight: FontWeight.bold)),
+                child: Text(hasGlaucoma ? 'Yes' : 'No', style: TextStyle(color: hasGlaucoma ? Colors.red[800] : Colors.green[800], fontSize: 20, fontWeight: FontWeight.bold)),
               ),
             ],
           ),
@@ -233,31 +262,38 @@ class _HomePageState extends State<HomePage> {
             SizedBox(height: 16),
             SizedBox(
               height: 200,
-              child: LineChart(
-                LineChartData(
-                  gridData: FlGridData(show: false),
-                  titlesData: FlTitlesData(show: false),
-                  borderData: FlBorderData(show: false),
-                  lineBarsData: [
-                    LineChartBarData(
-                      spots: [FlSpot(0, 40), FlSpot(1, 50), FlSpot(2, 64), FlSpot(3, 80), FlSpot(4, 70), FlSpot(5, 90), FlSpot(6, 60)],
-                      isCurved: true,
-                      color: Colors.white,
-                      barWidth: 3,
-                      isStrokeCapRound: true,
-                      belowBarData: BarAreaData(show: true, color: Colors.white.withOpacity(0.3)),
-                      dotData: FlDotData(show: true),
+              child: _tortuositySpots.isEmpty
+                  ? Center(child: CircularProgressIndicator(color: Colors.white))
+                  : LineChart(
+                      LineChartData(
+                        gridData: FlGridData(show: false),
+                        titlesData: FlTitlesData(show: false),
+                        borderData: FlBorderData(show: false),
+                        lineBarsData: [
+                          LineChartBarData(
+                            spots: _tortuositySpots,
+                            isCurved: true,
+                            color: Colors.white,
+                            barWidth: 3,
+                            isStrokeCapRound: true,
+                            belowBarData: BarAreaData(show: true, color: Colors.white.withOpacity(0.3)),
+                            dotData: FlDotData(show: true),
+                          ),
+                        ],
+                      ),
                     ),
-                  ],
-                ),
-              ),
             ),
             SizedBox(height: 16),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('PAST 7 MONTHS', style: TextStyle(color: Colors.white70, fontSize: 16)),
-                Text('157', style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold)),
+                Text('PAST ENTRIES', style: TextStyle(color: Colors.white70, fontSize: 16)),
+                Text(
+                  _tortuositySpots.isEmpty
+                      ? '0.0'
+                      : _tortuositySpots.map((e) => e.y).reduce((a, b) => a + b).toStringAsFixed(1),
+                  style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
+                ),
               ],
             ),
           ],
@@ -275,7 +311,7 @@ class _HomePageState extends State<HomePage> {
         decoration: BoxDecoration(color: Color(0xFF2196F3), borderRadius: BorderRadius.circular(16)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [Icon(Icons.add_a_photo, color: Colors.white), SizedBox(width: 10), Text('Upload Retinal Scan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16))],
+          children: [Icon(Icons.add_a_photo, color: Colors.white), SizedBox(width: 10), Text('Upload Retinal Scan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20))],
         ),
       ),
     );
@@ -297,9 +333,9 @@ class _HomePageState extends State<HomePage> {
           children: [
             ClipRRect(borderRadius: BorderRadius.circular(12), child: Image.asset(imagePath, height: 100, width: double.infinity, fit: BoxFit.cover)),
             SizedBox(height: 8),
-            Text(title, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis),
+            Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600), maxLines: 2, overflow: TextOverflow.ellipsis),
             SizedBox(height: 4),
-            Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 12)),
+            Text(subtitle, style: TextStyle(color: Colors.grey[600], fontSize: 15)),
           ],
         ),
       ),

@@ -13,7 +13,7 @@ class LandingScreen extends StatelessWidget {
           children: [
             const Spacer(flex: 2),
             Text(
-              'retina',
+              'Retina',
               style: TextStyle(
                 fontSize: 72,
                 fontWeight: FontWeight.bold,
@@ -21,7 +21,7 @@ class LandingScreen extends StatelessWidget {
               ),
             ),
             Text(
-              'tracker',
+              'Tracker',
               style: TextStyle(
                 fontSize: 72,
                 fontWeight: FontWeight.bold,

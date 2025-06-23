@@ -115,76 +115,155 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
     }
   }
 
-  Widget _buildCircleButton({required IconData icon, required VoidCallback onTap}) {
-    return GestureDetector(
-      onTap: onTap,
-      child: CircleAvatar(
-        backgroundColor: Colors.blue[700],
-        radius: 32,
-        child: Icon(icon, size: 28, color: Colors.white),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFFFFDF5),
       appBar: AppBar(
-        title: Text('Upload Retinal Scan', style: TextStyle(color: Colors.white)),
+        title: Text('Upload Retinal Scan', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold)),
         backgroundColor: Colors.blue[700],
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                _buildCircleButton(icon: Icons.camera_alt, onTap: () => _pickImage(ImageSource.camera)),
-                _buildCircleButton(icon: Icons.upload, onTap: () => _pickImage(ImageSource.gallery)),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.camera_alt, size: 28),
+                  label: Text(
+                    'Camera',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () => _pickImage(ImageSource.camera),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[700],
+                    foregroundColor: Colors.white,
+                    shape: StadiumBorder(),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  ),
+                ),
+                ElevatedButton.icon(
+                  icon: Icon(Icons.upload, size: 28),
+                  label: Text(
+                    'Gallery',
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  onPressed: () => _pickImage(ImageSource.gallery),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue[700],
+                    foregroundColor: Colors.white,
+                    shape: StadiumBorder(),
+                    padding: EdgeInsets.symmetric(horizontal: 24, vertical: 18),
+                  ),
+                ),
               ],
             ),
             SizedBox(height: 16),
             if (_selectedImage != null)
               ClipRRect(
-                borderRadius: BorderRadius.circular(12),
-                child: Image.file(_selectedImage!, height: 200),
+                borderRadius: BorderRadius.circular(16),
+                child: Image.file(_selectedImage!, height: 220),
               ),
-            SizedBox(height: 20),
-            DropdownButtonFormField<String>(
-              decoration: InputDecoration(labelText: 'Eye Side', border: OutlineInputBorder()),
-              value: _eyeSide,
-              items: ['Left', 'Right']
-                  .map((side) => DropdownMenuItem(value: side, child: Text(side)))
-                  .toList(),
-              onChanged: (value) => setState(() => _eyeSide = value),
-            ),
-            SizedBox(height: 20),
-            Row(
-              children: [
-                Text('Scan Date: ${DateFormat.yMMMd().format(_selectedDate)}', style: TextStyle(fontSize: 16)),
-                Spacer(),
-                ElevatedButton(
-                  onPressed: _selectDate,
-                  child: Text('Pick Date'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[700],
-                    foregroundColor: Colors.white,
+            SizedBox(height: 24),
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+              ),
+              padding: EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  DropdownButtonFormField<String>(
+                    decoration: InputDecoration(
+                      labelText: 'Eye Side',
+                      labelStyle: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey[800],
+                      ),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(color: Colors.blue, width: 1.5),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide(color: Colors.blue, width: 2),
+                      ),
+                    ),
+                    dropdownColor: Colors.white,
+                    value: _eyeSide,
+                    icon: Icon(Icons.arrow_drop_down, size: 30, color: Colors.blue[700]),
+                    items: ['Left', 'Right']
+                        .map((side) => DropdownMenuItem(
+                              value: side,
+                              child: Text(
+                                side,
+                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
+                              ),
+                            ))
+                        .toList(),
+                    onChanged: (value) => setState(() => _eyeSide = value),
                   ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            TextField(
-              controller: _notesController,
-              decoration: InputDecoration(labelText: 'Notes (optional)', border: OutlineInputBorder()),
-              maxLines: 2,
+                  SizedBox(height: 16),
+                  Container(
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(16)
+                    ),
+                    child: Row(
+                      children: [
+                        Text(
+                          'Scan Date:',
+                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            DateFormat.yMMMMd().format(_selectedDate),
+                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                          ),
+                        ),
+                        ElevatedButton(
+                          onPressed: _selectDate,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue[700],
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                            elevation: 2,
+                          ),
+                          child: Text(
+                            'Change',
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  SizedBox(height: 16),
+                  TextField(
+                    controller: _notesController,
+                    decoration: InputDecoration(
+                      labelText: 'Notes (optional)',
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                    ),
+                    maxLines: 2,
+                  ),
+                ],
+              ),
             ),
             SizedBox(height: 30),
             SizedBox(
               width: double.infinity,
-              height: 52,
+              height: 56,
               child: ElevatedButton.icon(
                 onPressed: _isUploading ? null : _uploadScan,
                 icon: _isUploading
@@ -192,12 +271,12 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
                     : Icon(Icons.cloud_upload, color: Colors.white),
                 label: Text(
                   _isUploading ? 'Uploading...' : 'Upload Scan',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 16),
+                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue[700],
                   disabledBackgroundColor: Colors.blue[300],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
               ),
             ),
