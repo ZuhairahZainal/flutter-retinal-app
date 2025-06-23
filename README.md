@@ -15,9 +15,10 @@
 
 ✅ Basic UI screens implemented: Landing, Register, Login, Home  
 ✅ Percent circular indicator and line chart integrated  
-⚠️ Upload / camera feature in progress  
-⚠️ Data storage, backend, authentication not complete yet  
-⚠️ No cloud sync yet  
+✅ Upload / camera feature
+✅ Data storage, backend, authentication in Firebase
+✅ Graph display data from Firebase
+✅ Learn more page (except the instruction page)
 
 ---
 
