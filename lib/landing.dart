@@ -9,30 +9,21 @@ class LandingScreen extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 36.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const Spacer(flex: 2),
-            Text(
-              'Retina',
-              style: TextStyle(
-                fontSize: 72,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[700],
+            Center(
+              child: Image.asset(
+                'assets/logo.jpg',
+                height: 200,
+                fit: BoxFit.contain,
               ),
             ),
+            const SizedBox(height: 24),
             Text(
-              'Tracker',
+              'Monitor your eye health and take control of your vision wellness',
               style: TextStyle(
-                fontSize: 72,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[700],
-              ),
-            ),
-            const SizedBox(height: 12),
-            Text(
-              'monitor your eye health',
-              style: TextStyle(
-                fontSize: 30,
+                fontSize: 22,
                 color: Colors.grey[700],
               ),
             ),
@@ -49,7 +40,7 @@ class LandingScreen extends StatelessWidget {
                     );
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[600],
+                    backgroundColor: Color(0xFF5A6E97),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50),
                     ),

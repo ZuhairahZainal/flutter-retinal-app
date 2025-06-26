@@ -1,3 +1,4 @@
+
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -117,44 +118,39 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
 
   @override
   Widget build(BuildContext context) {
+    final Color primaryColor = Color(0xFF5A6E97);
+
     return Scaffold(
       backgroundColor: const Color(0xFFFFFDF5),
       appBar: AppBar(
-        title: Text('Upload Retinal Scan', style: TextStyle(color: Colors.white, fontSize: 25, fontWeight: FontWeight.bold)),
-        backgroundColor: Colors.blue[700],
+        title: Text('Upload Retinal Scan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+        backgroundColor: primaryColor,
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton.icon(
                   icon: Icon(Icons.camera_alt, size: 28),
-                  label: Text(
-                    'Camera',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+                  label: Text('Camera', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                   onPressed: () => _pickImage(ImageSource.camera),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[700],
+                    backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
                     shape: StadiumBorder(),
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 18),
                   ),
                 ),
                 ElevatedButton.icon(
-                  icon: Icon(Icons.upload, size: 28),
-                  label: Text(
-                    'Gallery',
-                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                  ),
+                  icon: Icon(Icons.upload_file, size: 28),
+                  label: Text('Gallery', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
                   onPressed: () => _pickImage(ImageSource.gallery),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue[700],
+                    backgroundColor: primaryColor,
                     foregroundColor: Colors.white,
                     shape: StadiumBorder(),
                     padding: EdgeInsets.symmetric(horizontal: 24, vertical: 18),
@@ -162,100 +158,83 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
                 ),
               ],
             ),
-            SizedBox(height: 16),
-            if (_selectedImage != null)
+            if (_selectedImage != null) ...[
+              SizedBox(height: 24),
               ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.file(_selectedImage!, height: 220),
               ),
+            ],
             SizedBox(height: 24),
             Container(
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 6)],
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 3))],
               ),
-              padding: EdgeInsets.all(16),
+              padding: EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  Text('Eye Side', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.grey[800])),
+                  SizedBox(height: 10),
                   DropdownButtonFormField<String>(
                     decoration: InputDecoration(
-                      labelText: 'Eye Side',
-                      labelStyle: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.grey[800],
-                      ),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.blue, width: 1.5),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16),
-                        borderSide: BorderSide(color: Colors.blue, width: 2),
-                      ),
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      contentPadding: EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                     ),
-                    dropdownColor: Colors.white,
                     value: _eyeSide,
-                    icon: Icon(Icons.arrow_drop_down, size: 30, color: Colors.blue[700]),
+                    hint: Text('Select Eye Side'),
+                    icon: Icon(Icons.arrow_drop_down, color: Color(0xFF5A6E97)),
+                    dropdownColor: Colors.white,
                     items: ['Left', 'Right']
-                        .map((side) => DropdownMenuItem(
-                              value: side,
-                              child: Text(
-                                side,
-                                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                              ),
-                            ))
+                        .map((e) => DropdownMenuItem(value: e, child: Text(e)))
                         .toList(),
-                    onChanged: (value) => setState(() => _eyeSide = value),
+                    onChanged: (val) => setState(() => _eyeSide = val),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 24),
+                  Text('Scan Date', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.grey[800])),
+                  SizedBox(height: 10),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                    padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16)
+                      color: Colors.grey[100],
+                      borderRadius: BorderRadius.circular(16),
                     ),
                     child: Row(
                       children: [
-                        Text(
-                          'Scan Date:',
-                          style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black87),
-                        ),
+                        Icon(Icons.date_range, color: Color(0xFF5A6E97)),
                         SizedBox(width: 12),
                         Expanded(
                           child: Text(
                             DateFormat.yMMMMd().format(_selectedDate),
-                            style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                           ),
                         ),
-                        ElevatedButton(
+                        TextButton(
                           onPressed: _selectDate,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.blue[700],
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-                            padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-                            elevation: 2,
-                          ),
-                          child: Text(
-                            'Change',
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                          ),
+                          child: Text('Change', style: TextStyle(fontWeight: FontWeight.bold, color: Color(0xFF5A6E97))),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 16),
+                  SizedBox(height: 24),
+                  Text('Notes', style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600, color: Colors.grey[800])),
+                  SizedBox(height: 10),
                   TextField(
                     controller: _notesController,
+                    maxLines: 3,
                     decoration: InputDecoration(
-                      labelText: 'Notes (optional)',
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      hintText: 'Optional note about this scan...',
+                      filled: true,
+                      fillColor: Colors.grey[100],
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        borderSide: BorderSide.none,
+                      ),
                     ),
-                    maxLines: 2,
                   ),
                 ],
               ),
@@ -268,14 +247,13 @@ class _UploadRetinalScanPageState extends State<UploadRetinalScanPage> {
                 onPressed: _isUploading ? null : _uploadScan,
                 icon: _isUploading
                     ? SizedBox(width: 24, height: 24, child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                    : Icon(Icons.cloud_upload, color: Colors.white),
+                    : Icon(Icons.cloud_upload, color: Colors.white,),
                 label: Text(
-                  _isUploading ? 'Uploading...' : 'Upload Scan',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+                  _isUploading ? 'Uploading...' : 'Upload Retinal Scan',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue[700],
-                  disabledBackgroundColor: Colors.blue[300],
+                  backgroundColor: primaryColor,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
               ),

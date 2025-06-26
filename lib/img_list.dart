@@ -19,7 +19,7 @@ class UploadedScansPage extends StatelessWidget {
       backgroundColor: const Color(0xFFFFFDF5),
       appBar: AppBar(
         title: Text('Retinal Scan', style: TextStyle(color: Colors.white)),
-        backgroundColor: Colors.blue[700],
+        backgroundColor: Color(0xFF5A6E97),
         iconTheme: IconThemeData(color: Colors.white),
       ),
       body: StreamBuilder<QuerySnapshot>(
@@ -65,45 +65,45 @@ class UploadedScansPage extends StatelessWidget {
                           SizedBox(width: 8),
                           Text(
                             '${scan['eyeSide']} Eye - ${DateFormat.yMMMd().format(date)}',
-                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
+                            style: TextStyle(fontWeight: FontWeight.bold, fontSize: 22),
                           ),
                         ],
                       ),
                       SizedBox(height: 12),
                       Row(
                         children: [
-                          Icon(Icons.timeline, size: 18, color: Colors.deepPurple),
+                          Icon(Icons.timeline, size: 17, color: Color(0xFF5A6E97)),
                           SizedBox(width: 6),
-                          Text('Avg Tortuosity: ', style: TextStyle(fontWeight: FontWeight.w500)),
-                          Text('${scan['average_tortuosity']?.toStringAsFixed(2)}'),
+                          Text('Avg Tortuosity: ', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17)),
+                          Text('${scan['average_tortuosity']?.toStringAsFixed(2)}', style: TextStyle(fontSize: 17)),
                         ],
                       ),
                       SizedBox(height: 6),
                       Row(
                         children: [
-                          Icon(Icons.trending_up, size: 18, color: Colors.redAccent),
+                          Icon(Icons.trending_up, size: 17, color: Colors.redAccent),
                           SizedBox(width: 6),
-                          Text('Max Tortuosity: ', style: TextStyle(fontWeight: FontWeight.w500)),
-                          Text('${scan['max_tortuosity']?.toStringAsFixed(2)}'),
+                          Text('Max Tortuosity: ', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17)),
+                          Text('${scan['max_tortuosity']?.toStringAsFixed(2)}', style: TextStyle(fontSize: 17)),
                         ],
                       ),
                       SizedBox(height: 6),
                       Row(
                         children: [
-                          Icon(Icons.bubble_chart, size: 18, color: Colors.teal),
+                          Icon(Icons.bubble_chart, size: 17, color: Colors.teal),
                           SizedBox(width: 6),
-                          Text('Vessels: ', style: TextStyle(fontWeight: FontWeight.w500)),
-                          Text('${scan['num_vessels']}'),
+                          Text('Vessels: ', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17)),
+                          Text('${scan['num_vessels']}', style: TextStyle(fontSize: 17)),
                         ],
                       ),
                       if (scan['retinopathy_grade'] != null) ...[
                         SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.stacked_line_chart, size: 18, color: Colors.orange),
+                            Icon(Icons.stacked_line_chart, size: 17, color: Colors.orange),
                             SizedBox(width: 6),
-                            Text('Grade: ', style: TextStyle(fontWeight: FontWeight.w500)),
-                            Text('${scan['retinopathy_grade']}'),
+                            Text('Grade: ', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17)),
+                            Text('${scan['retinopathy_grade']}', style: TextStyle(fontSize: 17)),
                           ],
                         ),
                       ],
@@ -111,10 +111,10 @@ class UploadedScansPage extends StatelessWidget {
                         SizedBox(height: 6),
                         Row(
                           children: [
-                            Icon(Icons.warning_amber, size: 18, color: Colors.pinkAccent),
+                            Icon(Icons.warning_amber, size: 17, color: Colors.pinkAccent),
                             SizedBox(width: 6),
-                            Text('Edema Risk: ', style: TextStyle(fontWeight: FontWeight.w500)),
-                            Text('${scan['edema_risk']}'),
+                            Text('Edema Risk: ', style: TextStyle(fontWeight: FontWeight.w500, fontSize: 17)),
+                            Text('${scan['edema_risk']}', style: TextStyle(fontSize: 17)),
                           ],
                         ),
                       ],

@@ -1,5 +1,7 @@
+
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:retinalapp/homepage.dart';
 import 'package:retinalapp/register.dart';
 
@@ -8,13 +10,26 @@ class LoginPage extends StatefulWidget {
   _LoginPageState createState() => _LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMixin {
   final _formKey = GlobalKey<FormState>();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  String email = '';
+  String username = '';
   String password = '';
   bool isLoading = false;
   String? errorMessage;
+  final Color customBlue = Color(0xFF5A6E97);
+
+  bool _logoVisible = false;
+
+  @override
+  void initState() {
+    super.initState();
+    Future.delayed(Duration(milliseconds: 300), () {
+      setState(() {
+        _logoVisible = true;
+      });
+    });
+  }
 
   Future<void> _loginUser() async {
     setState(() {
@@ -23,6 +38,21 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
+      final query = await FirebaseFirestore.instance
+          .collection('users')
+          .where('username', isEqualTo: username)
+          .limit(1)
+          .get();
+
+      if (query.docs.isEmpty) {
+        setState(() {
+          errorMessage = 'Username not found.';
+          isLoading = false;
+        });
+        return;
+      }
+
+      final email = query.docs.first['email'];
       await _auth.signInWithEmailAndPassword(email: email, password: password);
       Navigator.pushReplacement(
         context,
@@ -47,38 +77,38 @@ class _LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFDF5),
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.blue[700]),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(24),
+        padding: EdgeInsets.only(top: 150, left: 50, right: 50),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            SizedBox(height: 8),
-            Text(
-              'Retinal Tracker',
-              style: TextStyle(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Colors.blue[700],
+            SizedBox(height: 16),
+            AnimatedOpacity(
+              duration: Duration(milliseconds: 1000),
+              opacity: _logoVisible ? 1.0 : 0.0,
+              child: AnimatedScale(
+                duration: Duration(milliseconds: 1000),
+                scale: _logoVisible ? 1.0 : 0.7,
+                curve: Curves.easeOutBack,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(24),
+                  child: Image.asset(
+                    'assets/logo.jpg',
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
             ),
-            SizedBox(height: 8),
+            SizedBox(height: 40),
             Text(
-              'Welcome back',
+              'LOGIN',
               style: TextStyle(
-                fontSize: 30,
+                fontSize: 35,
                 fontWeight: FontWeight.bold,
                 color: Colors.grey[800],
               ),
+              textAlign: TextAlign.center,
             ),
             SizedBox(height: 32),
             if (errorMessage != null)
@@ -94,16 +124,15 @@ class _LoginPageState extends State<LoginPage> {
                     decoration: InputDecoration(
                       filled: true,
                       fillColor: Colors.white,
-                      labelText: 'Email',
+                      labelText: 'Username',
                       labelStyle: TextStyle(fontSize: 18),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    keyboardType: TextInputType.emailAddress,
-                    onChanged: (value) => email = value.trim(),
+                    onChanged: (value) => username = value.trim(),
                     validator: (value) =>
-                        value == null || value.isEmpty ? 'Please enter your email' : null,
+                        value == null || value.isEmpty ? 'Please enter your username' : null,
                   ),
                   SizedBox(height: 20),
                   TextFormField(
@@ -121,7 +150,7 @@ class _LoginPageState extends State<LoginPage> {
                     validator: (value) =>
                         value == null || value.length < 6 ? 'Password must be at least 6 characters' : null,
                   ),
-                  SizedBox(height: 32),
+                  SizedBox(height: 40),
                   SizedBox(
                     width: 220,
                     height: 60,
@@ -132,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                         }
                       },
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[600],
+                        backgroundColor: customBlue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30),
                         ),
@@ -158,11 +187,22 @@ class _LoginPageState extends State<LoginPage> {
                         MaterialPageRoute(builder: (context) => RegisterPage()),
                       );
                     },
-                    child: Text(
-                      "Don't have an account? Register",
-                      style: TextStyle(
-                        color: Colors.blue[700],
-                        fontSize: 18,
+                    child: RichText(
+                      text: TextSpan(
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                        children: [
+                          TextSpan(text: "Don't have an account? "),
+                          TextSpan(
+                            text: "Register",
+                            style: TextStyle(
+                              color: customBlue,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ),

@@ -19,9 +19,10 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  double avgTortuosity = 0.0;
-  double avgRetinopathy = 0.0;
-  double avgEdemaRisk = 0.0;
+  double latestTortuosity = 0.0;
+  double latestRetinopathy = 0.0;
+  double latestEdemaRisk = 0.0;
+  double averageTortuosity = 0.0;
   bool hasGlaucoma = false;
   List<String> glaucomaCharacteristics = [];
   List<FlSpot> _tortuositySpots = [];
@@ -29,43 +30,29 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _calculateAverages();
+    _loadLatestScanData();
     _loadTortuosityGraphData();
   }
 
-  Future<void> _calculateAverages() async {
+  Future<void> _loadLatestScanData() async {
     final userId = FirebaseAuth.instance.currentUser?.uid;
     if (userId == null) return;
 
     final snapshot = await FirebaseFirestore.instance
         .collection('retinal_scans')
         .where('userId', isEqualTo: userId)
+        .orderBy('timestamp', descending: true)
+        .limit(1)
         .get();
 
-    double totalTortuosity = 0.0;
-    double totalRetino = 0.0;
-    double totalEdema = 0.0;
-    int count = 0;
-    int suspectedGlaucoma = 0;
+    if (snapshot.docs.isNotEmpty) {
+      final latestData = snapshot.docs.first.data();
 
-    for (var doc in snapshot.docs) {
-      final data = doc.data();
-      totalTortuosity += (data['average_tortuosity'] ?? 0.0);
-      totalRetino += (data['retinopathy_grade'] ?? 0.0); 
-      totalEdema += (data['edema_risk'] ?? 0.0);
-      count++;
-
-      if ((data['retinopathy_grade'] ?? 0.0) >= 2.5) { 
-        suspectedGlaucoma++;
-      }
-    }
-
-    if (count > 0) {
       setState(() {
-        avgTortuosity = totalTortuosity / count;
-        avgRetinopathy = totalRetino / count;
-        avgEdemaRisk = totalEdema / count;
-        hasGlaucoma = suspectedGlaucoma >= (count / 2);
+        latestTortuosity = (latestData['average_tortuosity'] ?? 0.0).toDouble();
+        latestRetinopathy = (latestData['retinopathy_grade'] ?? 0.0).toDouble();
+        latestEdemaRisk = (latestData['edema_risk'] ?? 0.0).toDouble();
+        hasGlaucoma = latestRetinopathy >= 2.5;
         glaucomaCharacteristics = hasGlaucoma
             ? ["Optic nerve cupping", "Increased IOP", "Visual field loss"]
             : [];
@@ -85,18 +72,22 @@ class _HomePageState extends State<HomePage> {
 
     final List<FlSpot> spots = [];
     int index = 0;
+    double total = 0;
 
     for (final doc in snapshot.docs) {
       final data = doc.data();
       final tort = data['average_tortuosity'];
       if (tort != null) {
-        spots.add(FlSpot(index.toDouble(), (tort as num).toDouble()));
+        final value = (tort as num).toDouble();
+        spots.add(FlSpot(index.toDouble(), value));
+        total += value;
         index++;
       }
     }
 
     setState(() {
       _tortuositySpots = spots;
+      averageTortuosity = spots.isEmpty ? 0.0 : total / spots.length;
     });
   }
 
@@ -104,47 +95,60 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFFFFDF5),
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        title: Text(
-          'Retinal Tracker',
-          style: TextStyle(
-            color: Colors.blue[700],
-            fontWeight: FontWeight.bold,
-            fontSize: 30,
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(120),
+        child: Container(
+          padding: EdgeInsets.only(top: 30, left: 20),
+          child: Stack(
+            children: [
+              Container(
+                height: 90,
+                width: 250,
+                child: Image.asset(
+                  'assets/upperlogo.jpg',
+                  fit: BoxFit.contain,
+                ),
+              ),
+              Positioned(
+                right: 20,
+                top: 10,
+                child: IconButton(
+                  icon: Icon(Icons.account_circle, color: Color(0xFF5A6E97), size: 60),
+                  onPressed: () {
+                    final user = FirebaseAuth.instance.currentUser;
+                    if (user != null) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfilePage()),
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text('Please log in first.')),
+                      );
+                    }
+                  },
+                ),
+              ),
+            ],
           ),
         ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.account_circle, color: Colors.grey[700], size: 45),
-            onPressed: () {
-              final user = FirebaseAuth.instance.currentUser;
-              if (user != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              } else {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Please log in first.')),
-                );
-              }
-            },
-          ),
-        ],
       ),
       body: SingleChildScrollView(
-        padding: EdgeInsets.all(20),
+        padding: EdgeInsets.all(15),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            _buildMetricCard(title: 'Vessel Tortuosity', icon: Icons.show_chart, value: avgTortuosity.toStringAsFixed(2)),
+            SizedBox(height: 8),
+            Text('Recent Analysis', style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Color(0xFF5A6E97))),
             SizedBox(height: 16),
-            _buildMetricCard(title: 'Retinopathy Score', icon: Icons.view_list, value: avgRetinopathy.toStringAsFixed(2)),
+            _buildMetricCard(title: 'Vessel Tortuosity', icon: Icons.show_chart, value: latestTortuosity.toStringAsFixed(2)),
             SizedBox(height: 16),
-            _buildMetricCard(title: 'Risk of Macular Edema', icon: Icons.opacity, value: avgEdemaRisk.toStringAsFixed(2)),
+            GestureDetector(
+              onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RetinopathyGradesPage())),
+              child: _buildMetricCard(title: 'Retinopathy Score', icon: Icons.view_list, value: latestRetinopathy.toStringAsFixed(2)),
+            ),
+            SizedBox(height: 16),
+            _buildMetricCard(title: 'Risk of Macular Edema', icon: Icons.opacity, value: latestEdemaRisk.toStringAsFixed(2)),
             SizedBox(height: 16),
             _buildGlaucomaCard(hasGlaucoma: hasGlaucoma, characteristics: glaucomaCharacteristics),
             SizedBox(height: 20),
@@ -155,7 +159,7 @@ class _HomePageState extends State<HomePage> {
               children: [
                 Text('View Retina Scans', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600)),
                 GestureDetector(
-                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (context) => UploadedScansPage())),
+                  onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => UploadedScansPage())),
                   child: Icon(Icons.arrow_forward, color: Colors.grey[700], size: 28),
                 ),
               ],
@@ -174,10 +178,10 @@ class _HomePageState extends State<HomePage> {
                   _buildLearningCard(imagePath: 'assets/retina_photo.png', title: 'Understanding Diabetic Retinopathy Grades and Vision Risk', subtitle: '3 min', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => RetinopathyGradesPage()))),
                   SizedBox(width: 16),
                   _buildLearningCard(imagePath: 'assets/eyes.png', title: 'How to take and upload a retinal photo', subtitle: '5 min', onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => LearnMorePage()))),
-
                 ],
               ),
             ),
+            SizedBox(height: 32),
           ],
         ),
       ),
@@ -199,7 +203,7 @@ class _HomePageState extends State<HomePage> {
           Row(children: [Icon(icon, color: Colors.grey[700], size: 28), SizedBox(width: 12), Text(title, style: TextStyle(fontSize: 20, fontWeight: FontWeight.w600))]),
           Container(
             padding: EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-            decoration: BoxDecoration(color: Colors.red[300], borderRadius: BorderRadius.circular(12)),
+            decoration: BoxDecoration(color: Color(0xFF5A6E97), borderRadius: BorderRadius.circular(12)),
             child: Text(value, style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20)),
           ),
         ],
@@ -220,7 +224,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           Row(
             children: [
-              Icon(Icons.remove_red_eye, color: Colors.blue[700]),
+              Icon(Icons.remove_red_eye, color: Color(0xFF5A6E97)),
               SizedBox(width: 12),
               Text('Glaucoma', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.grey[800])),
               Spacer(),
@@ -249,21 +253,42 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildGraphCard() {
+    double averageTortuosity = _tortuositySpots.isEmpty
+        ? 0.0
+        : _tortuositySpots.map((e) => e.y).reduce((a, b) => a + b) / _tortuositySpots.length;
+
     return GestureDetector(
       onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => GraphDetailPage())),
       child: Container(
         width: double.infinity,
-        decoration: BoxDecoration(color: Colors.blue[600], borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(
+          color: Color(0xFF5A6E97),
+          borderRadius: BorderRadius.circular(16),
+        ),
         padding: EdgeInsets.all(20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Average eye health', style: TextStyle(color: Colors.white, fontSize: 20)),
+            Text('Tortuosity History', style: TextStyle(color: Colors.white, fontSize: 20)),
             SizedBox(height: 16),
             SizedBox(
               height: 200,
               child: _tortuositySpots.isEmpty
-                  ? Center(child: CircularProgressIndicator(color: Colors.white))
+                  ? FutureBuilder<void>(
+                      future: Future.delayed(Duration(seconds: 2)),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
+                          return Center(child: CircularProgressIndicator(color: Colors.white));
+                        } else {
+                          return Center(
+                            child: Text(
+                              'No available data',
+                              style: TextStyle(color: Colors.white, fontSize: 18),
+                            ),
+                          );
+                        }
+                      },
+                    )
                   : LineChart(
                       LineChartData(
                         gridData: FlGridData(show: false),
@@ -272,11 +297,14 @@ class _HomePageState extends State<HomePage> {
                         lineBarsData: [
                           LineChartBarData(
                             spots: _tortuositySpots,
-                            isCurved: true,
+                            isCurved: false,
                             color: Colors.white,
                             barWidth: 3,
                             isStrokeCapRound: true,
-                            belowBarData: BarAreaData(show: true, color: Colors.white.withOpacity(0.3)),
+                            belowBarData: BarAreaData(
+                              show: true,
+                              color: Colors.white.withOpacity(0.3),
+                            ),
                             dotData: FlDotData(show: true),
                           ),
                         ],
@@ -287,12 +315,17 @@ class _HomePageState extends State<HomePage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text('PAST ENTRIES', style: TextStyle(color: Colors.white70, fontSize: 16)),
                 Text(
-                  _tortuositySpots.isEmpty
-                      ? '0.0'
-                      : _tortuositySpots.map((e) => e.y).reduce((a, b) => a + b).toStringAsFixed(1),
-                  style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
+                  'PAST ENTRIES',
+                  style: TextStyle(color: Colors.white70, fontSize: 16),
+                ),
+                Text(
+                  averageTortuosity.toStringAsFixed(2),
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -308,7 +341,7 @@ class _HomePageState extends State<HomePage> {
       child: Container(
         width: double.infinity,
         padding: EdgeInsets.symmetric(vertical: 18),
-        decoration: BoxDecoration(color: Color(0xFF2196F3), borderRadius: BorderRadius.circular(16)),
+        decoration: BoxDecoration(color: Color(0xFF5A6E97), borderRadius: BorderRadius.circular(16)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [Icon(Icons.add_a_photo, color: Colors.white), SizedBox(width: 10), Text('Upload Retinal Scan', style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 20))],

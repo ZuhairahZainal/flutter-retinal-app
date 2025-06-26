@@ -28,11 +28,8 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
   double get minY {
     switch (selectedMetric) {
       case 'Retinopathy Score':
-        return 0;
       case 'Risk of Macular Edema':
-        return 0;
       case 'Number of Vessels':
-        return 0;
       case 'Vessel Tortuosity':
       case 'Max Tortuosity':
         return 0;
@@ -43,35 +40,23 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
 
   double get maxY {
     switch (selectedMetric) {
-      case 'Retinopathy Score':
-        return 5;
-      case 'Risk of Macular Edema':
-        return 1;
-      case 'Number of Vessels':
-        return 180;
-      case 'Vessel Tortuosity':
-        return 100;
-      case 'Max Tortuosity':
-        return 600;
-      default:
-        return 100;
+      case 'Retinopathy Score': return 5;
+      case 'Risk of Macular Edema': return 3;
+      case 'Number of Vessels': return 180;
+      case 'Vessel Tortuosity': return 100;
+      case 'Max Tortuosity': return 2000;
+      default: return 100;
     }
   }
 
   double get interval {
     switch (selectedMetric) {
       case 'Retinopathy Score':
-        return 1;
-      case 'Risk of Macular Edema':
-        return 1;
-      case 'Number of Vessels':
-        return 20;
-      case 'Vessel Tortuosity':
-        return 20;
-      case 'Max Tortuosity':
-        return 100;
-      default:
-        return 10;
+      case 'Risk of Macular Edema': return 1;
+      case 'Number of Vessels': return 50;
+      case 'Vessel Tortuosity': return 20;
+      case 'Max Tortuosity': return 500;
+      default: return 10;
     }
   }
 
@@ -88,16 +73,11 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
     int index = 0;
     for (var doc in snapshot.docs) {
       final data = doc.data();
-      metricData['Vessel Tortuosity']!
-          .add(FlSpot(index.toDouble(), (data['average_tortuosity'] ?? 0).toDouble()));
-      metricData['Max Tortuosity']!
-          .add(FlSpot(index.toDouble(), (data['max_tortuosity'] ?? 0).toDouble()));
-      metricData['Retinopathy Score']!
-          .add(FlSpot(index.toDouble(), (data['retinopathy_grade'] ?? 0).toDouble()));
-      metricData['Risk of Macular Edema']!
-          .add(FlSpot(index.toDouble(), (data['edema_risk'] ?? 0).toDouble()));
-      metricData['Number of Vessels']!
-          .add(FlSpot(index.toDouble(), (data['num_vessels'] ?? 0).toDouble()));
+      metricData['Vessel Tortuosity']!.add(FlSpot(index.toDouble(), (data['average_tortuosity'] ?? 0).toDouble()));
+      metricData['Max Tortuosity']!.add(FlSpot(index.toDouble(), (data['max_tortuosity'] ?? 0).toDouble()));
+      metricData['Retinopathy Score']!.add(FlSpot(index.toDouble(), (data['retinopathy_grade'] ?? 0).toDouble()));
+      metricData['Risk of Macular Edema']!.add(FlSpot(index.toDouble(), (data['edema_risk'] ?? 0).toDouble()));
+      metricData['Number of Vessels']!.add(FlSpot(index.toDouble(), (data['num_vessels'] ?? 0).toDouble()));
       index++;
     }
 
@@ -109,6 +89,7 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
   @override
   Widget build(BuildContext context) {
     final metrics = metricData.keys.toList();
+    final Color mainBlue = Color(0xFF5A6E97);
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -129,7 +110,7 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
               style: TextStyle(
                 fontSize: 30,
                 fontWeight: FontWeight.bold,
-                color: Colors.blue[700],
+                color: mainBlue,
               ),
             ),
           ),
@@ -153,16 +134,10 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
                           duration: Duration(milliseconds: 200),
                           padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.blue[700] : Colors.grey[200],
+                            color: isSelected ? mainBlue : Colors.grey[200],
                             borderRadius: BorderRadius.circular(12),
                             boxShadow: isSelected
-                                ? [
-                                    BoxShadow(
-                                      color: Colors.black26,
-                                      blurRadius: 6,
-                                      offset: Offset(0, 2),
-                                    )
-                                  ]
+                                ? [BoxShadow(color: Colors.black26, blurRadius: 6, offset: Offset(0, 2))]
                                 : [],
                           ),
                           child: Text(
@@ -181,15 +156,9 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
                   Container(
                     width: double.infinity,
                     decoration: BoxDecoration(
-                      color: Colors.blue[600],
+                      color: mainBlue,
                       borderRadius: BorderRadius.circular(20),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black12,
-                          blurRadius: 10,
-                          offset: Offset(0, 6),
-                        )
-                      ],
+                      boxShadow: [BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, 6))],
                     ),
                     padding: EdgeInsets.all(24),
                     child: Column(
@@ -197,11 +166,7 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
                       children: [
                         Text(
                           selectedMetric,
-                          style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.bold),
                         ),
                         SizedBox(height: 20),
                         SizedBox(
@@ -218,11 +183,7 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
                                     return touchedSpots.map((spot) {
                                       return LineTooltipItem(
                                         '${spot.y.toStringAsFixed(1)}',
-                                        TextStyle(
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.white,
-                                        ),
+                                        TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white),
                                       );
                                     }).toList();
                                   },
@@ -235,50 +196,33 @@ class _GraphDetailPageState extends State<GraphDetailPage> {
                                     showTitles: true,
                                     interval: interval,
                                     reservedSize: 40,
-                                    getTitlesWidget: (value, meta) {
-                                      return Text(
-                                        value.toStringAsFixed(0),
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      );
-                                    },
+                                    getTitlesWidget: (value, meta) => Text(
+                                      value.toStringAsFixed(0),
+                                      style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                                    ),
                                   ),
                                 ),
-                                bottomTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
-                                rightTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
-                                topTitles: AxisTitles(
-                                  sideTitles: SideTitles(showTitles: false),
-                                ),
+                                bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                               ),
                               borderData: FlBorderData(show: false),
                               lineBarsData: [
                                 LineChartBarData(
                                   spots: metricData[selectedMetric]!,
-                                  isCurved: true,
+                                  isCurved: false,
                                   color: Colors.white,
                                   barWidth: 4,
                                   isStrokeCapRound: true,
-                                  belowBarData: BarAreaData(
-                                    show: true,
-                                    color: Colors.white.withOpacity(0.25),
-                                  ),
+                                  belowBarData: BarAreaData(show: true, color: Colors.white.withOpacity(0.25)),
                                   dotData: FlDotData(
                                     show: true,
-                                    getDotPainter: (spot, percent, barData, index) {
-                                      return FlDotCirclePainter(
-                                        radius: 4,
-                                        color: Colors.white,
-                                        strokeWidth: 2,
-                                        strokeColor: Colors.blue[800]!,
-                                      );
-                                    },
+                                    getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
+                                      radius: 4,
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                      strokeColor: mainBlue,
+                                    ),
                                   ),
                                 ),
                               ],

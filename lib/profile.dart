@@ -11,7 +11,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  String? name;
+  String? username;
+  String? firstName;
+  String? lastName;
   String? email;
   String? age;
   List<String> medicalConditions = [];
@@ -34,7 +36,9 @@ class _ProfilePageState extends State<ProfilePage> {
       final data = doc.data();
       if (data != null) {
         setState(() {
-          name = data['name'];
+          username = data['username'];
+          firstName = data['firstName'];
+          lastName = data['lastName'];
           email = data['email'];
           age = data['age'];
           medicalConditions = List<String>.from(data['medicalConditions'] ?? []);
@@ -86,7 +90,7 @@ class _ProfilePageState extends State<ProfilePage> {
               _otherController.clear();
               Navigator.pop(context);
             },
-            child: Text("Save"),
+            child: Text("Save", style: TextStyle(color: Color(0xFF5A6E97))),
           )
         ],
       ),
@@ -96,14 +100,13 @@ class _ProfilePageState extends State<ProfilePage> {
   void _removeCustomCondition(String condition) {
     setState(() {
       customConditions.remove(condition);
-
       if (customConditions.isEmpty && medicalConditions.contains('Other')) {
         medicalConditions.remove('Other');
       }
     });
     _saveConditions();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,10 +114,10 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
-        iconTheme: IconThemeData(color: Colors.blue[700]),
+        iconTheme: IconThemeData(color: Color(0xFF5A6E97)),
         title: Text(
           'Profile',
-          style: TextStyle(color: Colors.blue[700], fontWeight: FontWeight.bold, fontSize: 26),
+          style: TextStyle(color: Color(0xFF5A6E97), fontWeight: FontWeight.bold, fontSize: 26),
         ),
         actions: [
           IconButton(
@@ -134,17 +137,21 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: CircleAvatar(
                       radius: 50,
                       backgroundColor: Colors.blue[100],
-                      child: Icon(Icons.person, size: 60, color: Colors.blue[700]),
+                      child: Icon(Icons.person, size: 60, color: Color(0xFF5A6E97)),
                     ),
                   ),
                   SizedBox(height: 20),
                   Center(
                     child: Text(
-                      name ?? 'No name',
-                      style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.grey[800]),
+                      username ?? 'No username',
+                      style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Colors.grey[800]),
                     ),
                   ),
                   SizedBox(height: 30),
+                  _buildProfileItem(Icons.person, 'First Name', firstName ?? ''),
+                  SizedBox(height: 16),
+                  _buildProfileItem(Icons.person_outline, 'Last Name', lastName ?? ''),
+                  SizedBox(height: 16),
                   _buildProfileItem(Icons.email, 'Email', email ?? ''),
                   SizedBox(height: 16),
                   _buildProfileItem(Icons.cake, 'Age', age ?? ''),
@@ -198,7 +205,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(icon, color: Colors.blue[700]),
+        Icon(icon, color: Color(0xFF5A6E97)),
         SizedBox(width: 16),
         Expanded(
           child: Column(

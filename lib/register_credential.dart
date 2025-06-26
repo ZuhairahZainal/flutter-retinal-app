@@ -23,6 +23,7 @@ class _RegisterCredentialsPageState extends State<RegisterCredentialsPage> {
   final _formKey = GlobalKey<FormState>();
   String email = '';
   String password = '';
+  String username = '';
   bool _isLoading = false;
 
   Future<void> _register() async {
@@ -37,9 +38,14 @@ class _RegisterCredentialsPageState extends State<RegisterCredentialsPage> {
       );
 
       final uid = userCredential.user!.uid;
+      final nameParts = widget.name.trim().split(' ');
+      final firstName = nameParts.isNotEmpty ? nameParts[0] : '';
+      final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
 
       await FirebaseFirestore.instance.collection('users').doc(uid).set({
-        'name': widget.name,
+        'username': username,
+        'firstName': firstName,
+        'lastName': lastName,
         'age': widget.age,
         'email': email,
         'medicalConditions': widget.medicalConditions.entries
@@ -66,7 +72,7 @@ class _RegisterCredentialsPageState extends State<RegisterCredentialsPage> {
                   MaterialPageRoute(builder: (_) => HomePage()),
                 );
               },
-              child: Text('OK', style: TextStyle(color: Colors.blue)),
+              child: Text('OK', style: TextStyle(color: Color(0xFF5A6E97))),
             ),
           ],
         ),
@@ -87,104 +93,121 @@ class _RegisterCredentialsPageState extends State<RegisterCredentialsPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: Colors.blue[700]),
+          icon: Icon(Icons.arrow_back, color: Color(0xFF5A6E97)),
           onPressed: () => Navigator.pop(context),
         ),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(24),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Retinal Tracker',
-                style: TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.blue[700],
-                )),
-            SizedBox(height: 8),
-            Text('Register an Account',
-                style: TextStyle(
-                  fontSize: 28,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.grey[800],
-                )),
-            SizedBox(height: 32),
-            Form(
-              key: _formKey,
-              child: Column(
-                children: [
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "Email Address",
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelStyle: TextStyle(fontWeight: FontWeight.w600),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    keyboardType: TextInputType.emailAddress,
-                    onChanged: (val) => email = val,
-                    validator: (val) =>
-                        val != null && val.contains('@') ? null : "Enter a valid email",
-                  ),
-                  SizedBox(height: 24),
-                  TextFormField(
-                    decoration: InputDecoration(
-                      labelText: "Password",
-                      filled: true,
-                      fillColor: Colors.white,
-                      labelStyle: TextStyle(fontWeight: FontWeight.w600),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-                    ),
-                    obscureText: true,
-                    onChanged: (val) => password = val,
-                    validator: (val) =>
-                        val != null && val.length >= 6 ? null : "Minimum 6 characters",
-                  ),
-                  SizedBox(height: 36),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: _isLoading ? null : _register,
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue[700],
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                        padding: EdgeInsets.symmetric(vertical: 14),
+            Center(
+              child: Image.asset(
+                'assets/logo.jpg',
+                height: 150,
+              ),
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                SizedBox(height: 32),
+                Text(
+                  'Register an Account',
+                  style: TextStyle(
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.grey[800],
+                  )
+                ),
+                SizedBox(height: 32),
+                Form(
+                  key: _formKey,
+                  child: Column(
+                    children: [
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: "Username",
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelStyle: TextStyle(fontWeight: FontWeight.w600),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        onChanged: (val) => username = val,
+                        validator: (val) => val != null && val.length >= 3 ? null : "Enter a valid username",
                       ),
-                      child: _isLoading
-                          ? CircularProgressIndicator(color: Colors.white)
-                          : Text(
-                              "Sign Up",
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                            ),
-                    ),
-                  ),
-                  SizedBox(height: 16),
-                  Center(
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(builder: (_) => LoginPage()),
-                        );
-                      },
-                      child: Text(
-                        'Already have an account? Login',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.blue[700],
-                         
+                      SizedBox(height: 20),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: "Email Address",
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelStyle: TextStyle(fontWeight: FontWeight.w600),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        keyboardType: TextInputType.emailAddress,
+                        onChanged: (val) => email = val,
+                        validator: (val) => val != null && val.contains('@') ? null : "Enter a valid email",
+                      ),
+                      SizedBox(height: 20),
+                      TextFormField(
+                        decoration: InputDecoration(
+                          labelText: "Password",
+                          filled: true,
+                          fillColor: Colors.white,
+                          labelStyle: TextStyle(fontWeight: FontWeight.w600),
+                          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                        ),
+                        obscureText: true,
+                        onChanged: (val) => password = val,
+                        validator: (val) => val != null && val.length >= 6 ? null : "Minimum 6 characters",
+                      ),
+                      SizedBox(height: 36),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 52,
+                        child: ElevatedButton(
+                          onPressed: _isLoading ? null : _register,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Color(0xFF5A6E97),
+                            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                            padding: EdgeInsets.symmetric(vertical: 14),
+                          ),
+                          child: _isLoading
+                              ? CircularProgressIndicator(color: Colors.white)
+                              : Text(
+                                  "Sign Up",
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
                         ),
                       ),
-                    ),
+                      SizedBox(height: 16),
+                      Center(
+                        child: TextButton(
+                          onPressed: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(builder: (_) => LoginPage()),
+                            );
+                          },
+                          child: RichText(
+                            text: TextSpan(
+                              style: TextStyle(fontSize: 16, color: Colors.grey[800]),
+                              children: [
+                                TextSpan(text: 'Already have an account? '),
+                                TextSpan(text: 'Login', style: TextStyle(color: Color(0xFF5A6E97), fontWeight: FontWeight.bold)),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ],
         ),

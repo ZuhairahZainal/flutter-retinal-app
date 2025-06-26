@@ -1,10 +1,12 @@
 import torch.nn as nn
 import torchvision.models as models
+from torchvision.models import ResNet50_Weights
 
 class RetinaMultiTaskModel(nn.Module):
     def __init__(self, num_grade_classes=4, num_edema_classes=3):
         super().__init__()
-        self.backbone = models.resnet50(pretrained=True)
+        weights = ResNet50_Weights.IMAGENET1K_V1  # or .DEFAULT
+        self.backbone = models.resnet50(weights=weights)
         in_features = self.backbone.fc.in_features
         self.backbone.fc = nn.Identity()
 
